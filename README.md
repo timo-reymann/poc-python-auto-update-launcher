@@ -12,3 +12,14 @@ Graphical Auto Updater with QT 6 (pyside6).
 - No signing of checksums, which would be strongly advisable for any real world use case to ensure the archive has not
   been changed in transfer.
 - Error handling and UI is very basic and limited
+
+## Run it
+
+```shell
+cd .server
+docker compose up -d
+
+cd ..
+pip3 install -r requirements.txt
+python3 main.py
+```
