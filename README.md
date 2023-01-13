@@ -4,7 +4,12 @@ Proof of Concept - Python Auto Updater
 Graphical Auto Updater with QT 6 (pyside6).
 
 - Get version of currently installed software from VERSION file
-- Assumes files for application itself are in same folder
+- Assume files for application itself are in same folder
+
+## Setup
+
+1. Install dependencies with poetry install
+2. Run server in .server with docker-compoose
 
 ## Features
 
