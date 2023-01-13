@@ -7,7 +7,11 @@ import subprocess
 import shutil
 from hashlib import sha256
 
-from config import SERVER_URL, APP_FOLDER
+from Crypto.PublicKey import RSA
+
+from config import SERVER_URL, APP_FOLDER, RSA_PUBLIC_KEY
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
 
 
 def get_platform_identifier() -> str:
@@ -46,7 +50,7 @@ def launch_app() -> None:
     subprocess.Popen(["./application"], close_fds=True)
 
 
-def retrieve_checksum(platform_identifier: str, version: str) -> str:
+def retrieve_checksum(platform_identifier: str, version: str) -> (str, list[str]):
     with NamedTemporaryFile("r") as f:
         urlretrieve(f"{SERVER_URL}/{version}/checksums.txt", f.name)
 
@@ -54,7 +58,8 @@ def retrieve_checksum(platform_identifier: str, version: str) -> str:
 
         checksum_spec = line.split("  ")
         if checksum_spec[1].strip().replace(".zip", "") == platform_identifier:
-            return checksum_spec[0]
+            f.seek(0)
+            return checksum_spec[0], f.readlines()
 
     raise Exception("Checksum for platform not found")
 
@@ -70,7 +75,11 @@ def sha256_file_checksum(file_path: str) -> str:
 
 def update_app(new_version: str) -> None:
     platform_identifier = get_platform_identifier()
-    checksum = retrieve_checksum(platform_identifier, new_version)
+    checksum, file_lines = retrieve_checksum(platform_identifier, new_version)
+    checksum_signature = retrieve_checksum_signature(new_version)
+
+    if not verify_signature("".join(file_lines), checksum_signature):
+        raise Exception("Checksum has been modified in transfer")
 
     with TemporaryDirectory() as tmpdir:
         filename, _ = urlretrieve(f"{SERVER_URL}/{new_version}/{platform_identifier}.zip",
@@ -92,3 +101,17 @@ def update_and_launch():
         update_app(current_version)
 
     launch_app()
+
+
+def retrieve_checksum_signature(version: str):
+    with NamedTemporaryFile("rb") as f:
+        urlretrieve(f"{SERVER_URL}/{version}/checksums.sig", f.name)
+        return f.read()
+
+
+def verify_signature(content: str, signature: bytes):
+    rsa_key = RSA.importKey(RSA_PUBLIC_KEY)
+    signer = PKCS1_v1_5.new(rsa_key)
+    digest = SHA256.new()
+    digest.update(content.encode("utf8"))
+    return signer.verify(digest, signature)

@@ -1,1 +1,2 @@
 pyside6==6.4.2
+pycrypto==2.6.1
