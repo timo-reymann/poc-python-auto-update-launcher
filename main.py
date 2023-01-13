@@ -80,7 +80,7 @@ class UpdateDialog(QWidget):
         msg.setText("Failed to update and launch application.\n\n" +
                     self.message.text())
         self.close()
-        msg.exec_()
+        msg.exec()
 
     def update_ui_text(self, text: str) -> None:
         print(text)
@@ -91,4 +91,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     dialog = UpdateDialog()
     dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
