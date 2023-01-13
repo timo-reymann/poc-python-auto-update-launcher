@@ -4,11 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["Timo Reymann <mail@timo-reymann.de>"]
 readme = "README.md"
-packages = [{include = "poc_python_auto_update_launcher"}]
 
 [tool.poetry.dependencies]
 python = "~3.9"
-pyside6 = "6.4.2"
+pyside6 = "^6.4.2"
 pycryptodomex = "^3.16.0"
 
 [build-system]

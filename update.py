@@ -7,11 +7,11 @@ import subprocess
 import shutil
 from hashlib import sha256
 
-from Crypto.PublicKey import RSA
+from Cryptodome.PublicKey import RSA
 
 from config import SERVER_URL, APP_FOLDER, RSA_PUBLIC_KEY
-from Crypto.Signature import PKCS1_v1_5
-from Crypto.Hash import SHA256
+from Cryptodome.Signature import PKCS1_v1_5
+from Cryptodome.Hash import SHA256
 
 
 def get_platform_identifier() -> str:
